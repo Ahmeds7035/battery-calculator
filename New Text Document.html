@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.B Electronic - Battery Calculator</title>
+    <style>
+        /* General Page Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Logo and Title */
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+        }
+
+        h2 {
+            color: #2a9d8f;
+            margin: 10px 0;
+        }
+
+        /* Form Container */
+        .calculator-container {
+            background-color: #e9f5f8;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input Styles */
+        input[type="number"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        /* Button Styles */
+        button {
+            background-color: #2a9d8f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #21867a;
+        }
+
+        /* Results Section */
+        #results {
+            margin-top: 20px;
+            background-color: #fefae0;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #264653;
+        }
+
+        /* Language Toggle */
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="E:/my/A.B.png" alt="A.B Electronic Logo" class="logo">
+        <h2 id="title">A.B Electronic - Battery Calculator</h2>
+    </div>
+
+    <div class="language-toggle">
+        <button onclick="setLanguage('en')">English</button>
+        <button onclick="setLanguage('ar')">العربية</button>
+    </div>
+
+    <div class="calculator-container">
+        <h3 id="batteryCalculatorTitle">Battery Capacity Calculator</h3>
+        
+        <label id="currentLabel" for="current">Current (A):</label>
+        <input type="number" id="current" placeholder="Enter current in amps" step="0.01" onchange="clearResults()"><br>
+
+        <label id="timeLabel" for="time">Time (minutes):</label>
+        <input type="number" id="time" placeholder="Enter time in minutes" step="0.01" onchange="clearResults()"><br>
+
+        <h3 id="internalResistanceCalculatorTitle">Internal Resistance Calculator (Optional)</h3>
+        
+        <label id="voltageBeforeLabel" for="voltageBefore">Voltage Before Load (V₀):</label>
+        <input type="number" id="voltageBefore" placeholder="Enter voltage before load" step="0.01" onchange="clearResults()"><br>
+
+        <label id="voltageAfterLabel" for="voltageAfter">Voltage After Load (Vₗ):</label>
+        <input type="number" id="voltageAfter" placeholder="Enter voltage after load" step="0.01" onchange="clearResults()"><br>
+
+        <button onclick="calculate()">Calculate</button>
+
+        <div id="results" style="display: none;">
+            <p id="capacityResult" class="result-text"></p>
+            <p id="resistanceResult" class="result-text"></p>
+            <p id="powerResult" class="result-text"></p> <!-- Added for Power Display -->
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: "A.B Electronic - Battery Calculator",
+                batteryCalculatorTitle: "Battery Capacity Calculator",
+                currentLabel: "Current (A):",
+                timeLabel: "Time (minutes):",
+                internalResistanceCalculatorTitle: "Internal Resistance Calculator (Optional)",
+                voltageBeforeLabel: "Voltage Before Load (V₀):",
+                voltageAfterLabel: "Voltage After Load (Vₗ):",
+                capacityResultText: "Battery Capacity: ",
+                resistanceResultText: "Internal Resistance: ",
+                unitCapacity: "mAh",
+                unitResistance: "Ω"
+            },
+            ar: {
+                title: "إلكترونيات A.B - حاسبة البطارية",
+                batteryCalculatorTitle: "حاسبة سعة البطارية",
+                currentLabel: "التيار (A):",
+                timeLabel: "الوقت (دقائق):",
+                internalResistanceCalculatorTitle: "حاسبة المقاومة الداخلية (اختياري)",
+                voltageBeforeLabel: "الجهد قبل التحميل (V₀):",
+                voltageAfterLabel: "الجهد بعد التحميل (Vₗ):",
+                capacityResultText: "سعة البطارية: ",
+                resistanceResultText: "المقاومة الداخلية: ",
+                unitCapacity: "مللي أمبير ساعة",
+                unitResistance: "أوم"
+            }
+        };
+
+        function setLanguage(language) {
+            document.getElementById("title").textContent = translations[language].title;
+            document.getElementById("batteryCalculatorTitle").textContent = translations[language].batteryCalculatorTitle;
+            document.getElementById("currentLabel").textContent = translations[language].currentLabel;
+            document.getElementById("timeLabel").textContent = translations[language].timeLabel;
+            document.getElementById("internalResistanceCalculatorTitle").textContent = translations[language].internalResistanceCalculatorTitle;
+            document.getElementById("voltageBeforeLabel").textContent = translations[language].voltageBeforeLabel;
+            document.getElementById("voltageAfterLabel").textContent = translations[language].voltageAfterLabel;
+        }
+
+        function calculate() {
+            const current = parseFloat(document.getElementById("current").value);
+            const time = parseFloat(document.getElementById("time").value);
+            const voltageBefore = parseFloat(document.getElementById("voltageBefore").value);
+            const voltageAfter = parseFloat(document.getElementById("voltageAfter").value);
+
+            if (isNaN(current) || isNaN(time)) {
+                alert("Please enter values for both current and time to calculate capacity.");
+                return;
+            }
+
+            const timeInHours = time / 60;
+            const capacity = current * timeInHours * 1000;
+
+            document.getElementById("results").style.display = "block";
+            document.getElementById("capacityResult").textContent =
+                translations.en.capacityResultText + capacity.toFixed(1) + " " + translations.en.unitCapacity;
+
+            if (!isNaN(voltageBefore) && !isNaN(voltageAfter)) {
+                const internalResistance = (voltageBefore - voltageAfter) / current;
+                document.getElementById("resistanceResult").textContent = 
+                    translations.en.resistanceResultText + internalResistance.toFixed(1) + " " + translations.en.unitResistance;
+
+                const power = current * voltageBefore; // Power calculation in watts
+                document.getElementById("powerResult").textContent = "Power (W): " + power.toFixed(1) + " W";
+            } else {
+                document.getElementById("resistanceResult").textContent = "";
+                document.getElementById("powerResult").textContent = ""; // Clear power result if no voltage entered
+            }
+        }
+
+        function clearResults() {
+            document.getElementById("results").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
